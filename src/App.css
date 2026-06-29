@@ -1,0 +1,300 @@
+/* VitalMetrics Dashboard - Responsive Stylesheet */
+
+/* Layout & Container */
+.dashboard-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.dashboard-header {
+  margin-bottom: 32px;
+  text-align: left;
+}
+
+.dashboard-header h1 {
+  margin: 0 0 8px 0;
+  font-size: 38px;
+  background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.dashboard-header p {
+  color: var(--text);
+  font-size: 15px;
+  margin: 0;
+}
+
+/* Grids & Layout Structures */
+.dashboard-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr;
+}
+
+.widgets-grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+.exercises-list-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+/* Premium Card Elements */
+.card-wrapper, .bento-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 0;
+  padding: 24px;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.card-wrapper:hover, .bento-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #d6c1cd;
+  border-radius: 0;
+}
+
+/* Forms & UI Controls */
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-field-row {
+  display: flex;
+  gap: 16px;
+  width: 100%;
+}
+
+.form-field-row .form-field {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.input-control,
+.select-control {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: 0;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 15px;
+  outline: none;
+  font-family: var(--sans);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input-control:focus,
+.select-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+.input-error {
+  border-color: #ef4444 !important;
+}
+
+.input-error:focus {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.error-message {
+  font-size: 12px;
+  color: #ef4444;
+  margin-top: 4px;
+  display: block;
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 20px;
+  background-color: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+  fontWeight: 600;
+  font-size: 15px;
+  font-family: var(--sans);
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 16px;
+  background-color: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: 0;
+  cursor: pointer;
+  font-size: 14px;
+  fontWeight: 600;
+  font-family: var(--sans);
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.btn-remove {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 4px;
+  border-radius: 0;
+  transition: background-color 0.2s;
+}
+
+.btn-remove:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Lists and Scrollers */
+.scroll-container {
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 4px;
+  scrollbar-width: thin;
+}
+
+.selected-items-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.selected-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  margin: 6px 0;
+  border-radius: 0;
+  background: var(--social-bg);
+  font-size: 14px;
+  border: 1px solid var(--border);
+  gap: 8px;
+  word-break: break-word;
+}
+
+/* Badges */
+.badge-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 0;
+  text-transform: capitalize;
+  display: inline-block;
+}
+
+/* Animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  display: inline-block;
+  animation: spin 1.2s linear infinite;
+}
+
+/* Responsive Overrides (Mobile-First approach overrides for larger screens) */
+@media (max-width: 768px) {
+  .dashboard-container {
+    padding: 16px;
+  }
+  
+  .dashboard-header h1 {
+    font-size: 30px;
+    letter-spacing: -0.5px;
+  }
+  
+  .card-wrapper {
+    padding: 16px;
+  }
+
+  .form-field-row {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .form-field-row .form-field {
+    width: 100%;
+  }
+
+  .widgets-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .exercises-list-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-container {
+    padding: 12px;
+  }
+
+  .dashboard-header h1 {
+    font-size: 26px;
+  }
+
+  .selected-item {
+    font-size: 13px;
+    padding: 6px 8px;
+  }
+  
+  .badge-pill {
+    padding: 2px 6px;
+    font-size: 10px;
+  }
+}
