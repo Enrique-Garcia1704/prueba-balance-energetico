@@ -339,7 +339,7 @@ export function Dashboard() {
           className="flex flex-col items-center gap-xs text-secondary cursor-pointer no-underline"
         >
           <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>dashboard</span>
-          <span className="text-[10px] font-bold">Dashboard</span>
+          <span className="text-[10px] font-bold">Inicio</span>
         </a>
         <a
           href="#history-section"
@@ -356,6 +356,14 @@ export function Dashboard() {
         >
           <span className="material-symbols-outlined">restaurant</span>
           <span className="text-[10px] font-bold">Nutrición</span>
+        </a>
+        <a
+          href="#exercises-section"
+          onClick={scrollToSection('exercises-section')}
+          className="flex flex-col items-center gap-xs text-on-surface-variant cursor-pointer no-underline"
+        >
+          <span className="material-symbols-outlined">fitness_center</span>
+          <span className="text-[10px] font-bold">Ejercicio</span>
         </a>
       </nav>
     </>
