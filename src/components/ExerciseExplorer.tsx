@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useExercises } from '../hooks/useExercises';
 import type { ExerciseItem } from '../types/exercises';
 
@@ -443,8 +444,8 @@ export function ExerciseExplorer() {
       )}
 
       {/* Instructions Modal Overlay */}
-      {selectedExercise && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-md animate-in fade-in duration-200">
+      {selectedExercise && createPortal(
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-md animate-in fade-in duration-200">
           <div className="bg-surface-container-lowest rounded-none max-w-lg w-full p-lg shadow-2xl border border-outline-variant/30 flex flex-col max-h-[80vh] relative animate-in zoom-in-95 duration-200">
             {/* Close Button Top Right */}
             <button
@@ -471,6 +472,14 @@ export function ExerciseExplorer() {
               <span className="text-[10px] bg-surface-container px-sm py-1 rounded-none text-on-surface-variant font-bold">
                 {translateType(selectedExercise.type)}
               </span>
+            </div>
+
+            {/* Language Notice Banner */}
+            <div className="bg-primary/5 border border-primary/20 text-primary text-xs px-3 py-2 rounded-md mb-4 flex items-start gap-2">
+              <span className="material-symbols-outlined text-[18px] text-primary select-none mt-[2px]">sentiment_dissatisfied</span>
+              <p className="m-0 leading-normal">
+                <strong>Nota de idioma:</strong> Las instrucciones de la base de datos clínica se muestran temporalmente en inglés. Estamos trabajando en su traducción automática al español.
+              </p>
             </div>
 
             {/* Instructions Content (Isolated Scroll) */}
@@ -511,7 +520,8 @@ export function ExerciseExplorer() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

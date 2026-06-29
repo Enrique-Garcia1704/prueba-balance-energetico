@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 
 interface BMRCalculatorModalProps {
   onClose: () => void;
@@ -25,7 +26,7 @@ export function BMRCalculatorModal({ onClose, onCalculate }: BMRCalculatorModalP
     onCalculate(Math.round(bmr));
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div 
         className="bg-surface-container-lowest w-full max-w-md rounded-md shadow-2xl p-6 border border-outline-variant/30 flex flex-col gap-4 animate-in fade-in zoom-in duration-200"
@@ -117,6 +118,7 @@ export function BMRCalculatorModal({ onClose, onCalculate }: BMRCalculatorModalP
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

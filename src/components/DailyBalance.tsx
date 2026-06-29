@@ -56,7 +56,7 @@ export const DailyBalance = React.memo(function DailyBalance({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-md text-left">
         {/* Card 1: Consumed */}
         <div className="bento-card bg-surface-container-lowest p-lg rounded-none shadow-[0_4px_20px_-4px_rgba(122,29,109,0.1)] border border-outline-variant/30 flex flex-col justify-between">
-          <div className="flex items-start justify-between mb-md">
+          <div className="flex items-center justify-between mb-md">
             <span className="font-label-md text-label-md text-primary-container px-sm py-1 bg-primary/10 rounded-none flex items-center gap-xs relative group">
               <span>Calorías Consumidas</span>
               <span className="material-symbols-outlined text-[14px] text-outline hover:text-primary transition-colors cursor-help select-none">info</span>
@@ -64,7 +64,7 @@ export const DailyBalance = React.memo(function DailyBalance({
                 Suma de la energía aportada por todos los alimentos registrados hoy. Te ayuda a controlar tu ingesta diaria.
               </div>
             </span>
-            <img src={IconConsumed} alt="Calorías Consumidas" className="w-9 h-9 object-contain" />
+            <img src={IconConsumed} alt="Calorías Consumidas" className="w-8 h-8 object-contain" />
           </div>
           <div className="flex flex-col mt-xs">
             <span className="font-display-lg text-display-lg text-on-surface leading-none">{totalConsumed}</span>
@@ -76,7 +76,7 @@ export const DailyBalance = React.memo(function DailyBalance({
 
         {/* Card 2: Burned */}
         <div className="bento-card bg-surface-container-lowest p-lg rounded-none shadow-[0_4px_20px_-4px_rgba(122,29,109,0.1)] border border-outline-variant/30 flex flex-col justify-between">
-          <div className="flex items-start justify-between mb-md">
+          <div className="flex items-center justify-between mb-md">
             <span className="font-label-md text-label-md text-primary-container px-sm py-1 bg-primary/10 rounded-none flex items-center gap-xs relative group">
               <span>Calorías Quemadas</span>
               <span className="material-symbols-outlined text-[14px] text-outline hover:text-primary transition-colors cursor-help select-none">info</span>
@@ -84,7 +84,7 @@ export const DailyBalance = React.memo(function DailyBalance({
                 Tu gasto energético total. Incluye tu metabolismo basal estimado más el esfuerzo extra de tus ejercicios.
               </div>
             </span>
-            <img src={IconBurned} alt="Calorías Quemadas" className="w-7 h-7 object-contain" />
+            <img src={IconBurned} alt="Calorías Quemadas" className="w-8 h-8 object-contain" />
           </div>
           <div className="flex flex-col mt-xs">
             <span className="font-display-lg text-display-lg text-on-surface leading-none">{totalBurned}</span>
@@ -96,7 +96,7 @@ export const DailyBalance = React.memo(function DailyBalance({
 
         {/* Card 3: Net Balance */}
         <div className="bento-card bg-surface-container-lowest p-lg rounded-none shadow-[0_4px_20px_-4px_rgba(122,29,109,0.1)] border border-outline-variant/30 flex flex-col justify-between">
-          <div className="flex items-start justify-between mb-md">
+          <div className="flex items-center justify-between mb-md">
             <span className="font-label-md text-label-md text-primary-container px-sm py-1 bg-primary/10 rounded-none flex items-center gap-xs relative group">
               <span>Balance Neto</span>
               <span className="material-symbols-outlined text-[14px] text-outline hover:text-primary transition-colors cursor-help select-none">info</span>
@@ -104,7 +104,7 @@ export const DailyBalance = React.memo(function DailyBalance({
                 El resultado de restar lo que quemas a lo que consumes. Un número negativo indica déficit calórico.
               </div>
             </span>
-            <img src={IconBalance} alt="Balance Neto" className="w-7 h-7 object-contain" />
+            <img src={IconBalance} alt="Balance Neto" className="w-8 h-8 object-contain" />
           </div>
           <div className="flex flex-col mt-xs">
             <span className="font-display-lg text-display-lg text-on-surface leading-none">{netBalance}</span>
@@ -118,7 +118,7 @@ export const DailyBalance = React.memo(function DailyBalance({
       {/* Real-time Calories Comparison and Selected Items / Empty State in a Bento Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-md w-full items-stretch">
         {/* Chart Column (7/12 width on desktop) */}
-        <div className="lg:col-span-7 h-full">
+        <div className="lg:col-span-7 h-full min-w-0">
           <CaloriesChart totalConsumed={totalConsumed} totalExerciseBurned={totalBurned} />
         </div>
 
