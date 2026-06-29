@@ -244,20 +244,19 @@ export function Dashboard() {
       {/* Top App Bar (Universal) */}
       <header className="fixed top-0 right-0 left-0 md:left-64 bg-surface/80 backdrop-blur-md shadow-sm z-30">
         <div className="flex justify-between items-center px-md py-sm max-w-container-max mx-auto">
-          <div className="md:hidden flex items-center gap-sm">
-            <span className="material-symbols-outlined text-primary">menu</span>
+          <div className="md:hidden flex items-center justify-center w-full">
             <span className="font-headline-md text-headline-md font-bold text-primary">VitalMetrics</span>
           </div>
           <div className="hidden md:block">
             <h2 className="font-headline-md text-headline-md text-primary" style={{ margin: 0 }}>Panel de Salud</h2>
           </div>
-          <div className="flex items-center gap-md">
+          <div className="hidden md:flex items-center gap-md">
           </div>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="pt-xl pb-xl md:ml-64 min-h-screen px-md">
+      <main className="pt-xl pb-32 md:pb-6 md:ml-64 min-h-screen px-md">
         <div className="max-w-container-max mx-auto space-y-xl mt-md">
 
           {/* Daily Balance Wrapper with ID */}

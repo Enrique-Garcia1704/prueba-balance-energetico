@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNutrition } from '../hooks/useNutrition';
 import { Card } from './Card';
 import type { NutritionItem } from '../types/nutrition';
@@ -60,6 +60,14 @@ const FOOD_DICTIONARY = [
   { es: "almendras", en: "almonds" },
   { es: "cacahuates", en: "peanuts" }
 ];
+
+// Known liquid foods for unit detection (matched by Spanish input)
+const LIQUID_FOODS = new Set([
+  'leche', 'agua', 'jugo', 'jugo de naranja', 'jugo de manzana',
+  'yogur griego', 'yogurt griego', 'café', 'cafe', 'té', 'te',
+  'caldo', 'sopa', 'batido', 'smoothie', 'refresco', 'cerveza',
+  'vino', 'aceite', 'aceite de oliva', 'salsa', 'vinagre',
+]);
 
 const FALLBACK_NUTRITION: Record<string, Partial<NutritionItem>> = {
   'chicken breast': { calories: 165, protein_g: 31, fat_total_g: 3.6, carbohydrates_total_g: 0 },
@@ -127,9 +135,18 @@ export const NutritionSearch = React.memo(function NutritionSearch({ onAddFood }
   const [searchTerm, setSearchTerm] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
+
+  // Reactively detect if the current input is a liquid
+  const isLiquid = useMemo(() => {
+    const clean = inputValue.toLowerCase().trim();
+    return LIQUID_FOODS.has(clean);
+  }, [inputValue]);
+
+  const unitLabel = isLiquid ? 'Mililitros (ml)' : 'Gramos';
+  const unitSuffix = isLiquid ? 'ml' : 'g';
  
-  // Consume TanStack Query hook - querying 100g base for scaling
-  const { data: foodResults, isLoading, isError, error } = useNutrition(searchTerm, "100g");
+  // Consume TanStack Query hook - querying 100g/100ml base for scaling
+  const { data: foodResults, isLoading, isError, error } = useNutrition(searchTerm, `100${unitSuffix}`);
  
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -208,14 +225,14 @@ export const NutritionSearch = React.memo(function NutritionSearch({ onAddFood }
               onBlur={() => setTimeout(() => { setShowSuggestions(false); setHighlightedIndex(-1); }, 200)}
               onKeyDown={handleKeyDown}
               placeholder="Ej. Ensalada, Manzana..."
-              className="w-full rounded-none border-outline-variant focus:border-secondary focus:ring-secondary/20 p-sm text-title-md bg-transparent border h-14"
+              className="w-full rounded-md border-outline-variant focus:border-secondary focus:ring-secondary/20 p-sm text-title-md bg-transparent border h-11"
               autoComplete="off"
               role="combobox"
               aria-expanded={showSuggestions && filteredSuggestions.length > 0}
               aria-activedescendant={highlightedIndex >= 0 ? `suggestion-${highlightedIndex}` : undefined}
             />
             {showSuggestions && filteredSuggestions.length > 0 && (
-              <ul className="absolute top-full mt-1 z-10 w-full bg-surface-container-lowest rounded-none shadow-xl border border-outline-variant/50 max-h-48 overflow-y-auto m-0 p-0 list-none custom-scrollbar" role="listbox">
+              <ul className="absolute top-full mt-1 z-10 w-full bg-surface-container-lowest rounded-md shadow-xl border border-outline-variant/50 max-h-48 overflow-y-auto m-0 p-0 list-none custom-scrollbar" role="listbox">
                 {filteredSuggestions.map((food, idx) => (
                   <li
                     key={idx}
@@ -242,18 +259,18 @@ export const NutritionSearch = React.memo(function NutritionSearch({ onAddFood }
 
           {/* Fila 2: Configuración y Acción */}
           <div className="flex flex-row items-center justify-between w-full mt-3 gap-3">
-            {/* Cantidad (g) */}
+            {/* Cantidad (g/ml) */}
             <div className="flex items-center gap-2">
-              <span className="text-body-md text-outline font-medium">Gramos:</span>
+              <span className="text-body-md text-outline font-medium transition-all duration-200">{unitLabel}:</span>
               <input
                 type="number"
                 value={grams}
                 min="1"
                 max="10000"
                 onChange={(e) => setGrams(Number(e.target.value))}
-                placeholder="Cantidad (g)"
-                className="w-32 flex-shrink-0 rounded-none border-outline-variant focus:border-secondary focus:ring-secondary/20 p-sm text-title-md bg-transparent border text-center h-14"
-                title="Cantidad en gramos"
+                placeholder={`Cantidad (${unitSuffix})`}
+                className="w-32 flex-shrink-0 rounded-md border-outline-variant focus:border-secondary focus:ring-secondary/20 p-sm text-title-md bg-transparent border text-center h-11"
+                title={`Cantidad en ${isLiquid ? 'mililitros' : 'gramos'}`}
               />
             </div>
 
@@ -261,15 +278,12 @@ export const NutritionSearch = React.memo(function NutritionSearch({ onAddFood }
             <button
               type="submit"
               disabled={isLoading}
-              className="flex-1 bg-secondary text-white rounded-none font-sans font-medium flex items-center justify-center gap-xs hover:opacity-90 transition-all active:scale-95 border-none disabled:opacity-50 disabled:cursor-not-allowed h-14 cursor-pointer"
+              className="flex-1 bg-secondary-container text-white rounded-md font-sans font-semibold flex items-center justify-center gap-xs hover:opacity-90 transition-all active:scale-95 border-none disabled:opacity-50 disabled:cursor-not-allowed h-11 cursor-pointer shadow-md"
             >
               {isLoading ? (
                 <span className="material-symbols-outlined animate-spin text-[20px]">sync</span>
               ) : (
-                <>
-                  <span className="material-symbols-outlined text-[20px]">search</span>
-                  <span className="font-sans font-medium text-base">Buscar</span>
-                </>
+                <span className="font-sans font-medium text-base">Buscar</span>
               )}
             </button>
           </div>
@@ -336,7 +350,7 @@ export const NutritionSearch = React.memo(function NutritionSearch({ onAddFood }
                         <div className="flex justify-between items-start">
                           <Card.Header className="flex-col items-start gap-0">
                             <p className="font-title-lg text-title-lg text-on-surface capitalize font-bold" style={{ margin: 0, fontSize: '1.25rem' }}>{translateFoodToSpanish(item.name)}</p>
-                            <p className="text-caption text-outline" style={{ margin: 0 }}>Porción: {scaledItem.serving_size_g}g</p>
+                            <p className="text-caption text-outline" style={{ margin: 0 }}>Porción: {scaledItem.serving_size_g}{unitSuffix}</p>
                           </Card.Header>
  
                           <div className="text-right flex flex-col">

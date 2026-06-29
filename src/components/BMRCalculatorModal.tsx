@@ -7,10 +7,22 @@ interface BMRCalculatorModalProps {
 }
 
 export function BMRCalculatorModal({ onClose, onCalculate }: BMRCalculatorModalProps) {
-  const [age, setAge] = useState<number | ''>('');
-  const [weight, setWeight] = useState<number | ''>('');
-  const [height, setHeight] = useState<number | ''>('');
-  const [gender, setGender] = useState<'male' | 'female'>('male');
+  const [age, setAge] = useState<number | ''>(() => {
+    const saved = localStorage.getItem('vitalmetrics_age');
+    return saved ? parseInt(saved, 10) : '';
+  });
+  const [weight, setWeight] = useState<number | ''>(() => {
+    const saved = localStorage.getItem('vitalmetrics_weight_kg');
+    return saved ? parseFloat(saved) : '';
+  });
+  const [height, setHeight] = useState<number | ''>(() => {
+    const saved = localStorage.getItem('vitalmetrics_height');
+    return saved ? parseInt(saved, 10) : '';
+  });
+  const [gender, setGender] = useState<'male' | 'female'>(() => {
+    const saved = localStorage.getItem('vitalmetrics_gender');
+    return (saved === 'male' || saved === 'female') ? saved : 'male';
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +35,18 @@ export function BMRCalculatorModal({ onClose, onCalculate }: BMRCalculatorModalP
     } else {
       bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
     }
+
+    // Save physical metrics to localStorage
+    localStorage.setItem('vitalmetrics_weight_kg', weight.toString());
+    const lbs = weight * 2.20462;
+    localStorage.setItem('vitalmetrics_weight_lbs', Math.round(lbs).toString());
+    localStorage.setItem('vitalmetrics_age', age.toString());
+    localStorage.setItem('vitalmetrics_height', height.toString());
+    localStorage.setItem('vitalmetrics_gender', gender);
+
+    // Trigger weight change event for synchronization
+    window.dispatchEvent(new Event('vitalmetrics_weight_changed'));
+
     onCalculate(Math.round(bmr));
   };
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCalories } from '../hooks/useCalories';
 import { Card } from './Card';
 import type { CaloriesBurnedItem, CaloriesBurnedSearchParams } from '../types/calories';
@@ -99,22 +99,70 @@ interface CaloriesCalculatorProps {
   onAddActivity: (activity: CaloriesBurnedItem) => void;
 }
 
+// Helper to get initial weight in kg from localStorage or estimate it
+const getInitialWeight = (): string => {
+  const savedKg = localStorage.getItem('vitalmetrics_weight_kg');
+  if (savedKg) return savedKg;
+
+  const savedLbs = localStorage.getItem('vitalmetrics_weight_lbs');
+  if (savedLbs) {
+    const lbs = parseFloat(savedLbs);
+    if (!isNaN(lbs) && lbs > 0) {
+      return Math.round(lbs / 2.20462).toString();
+    }
+  }
+
+  const savedBmr = localStorage.getItem('vitalmetrics_bmr');
+  if (savedBmr) {
+    const bmr = parseInt(savedBmr, 10);
+    if (!isNaN(bmr) && bmr > 0) {
+      return Math.round((bmr / 10) / 2.20462).toString();
+    }
+  }
+
+  return '70';
+};
+
 export const CaloriesCalculator = React.memo(function CaloriesCalculator({ onAddActivity }: CaloriesCalculatorProps) {
   const [activityInput, setActivityInput] = useState('');
-  const [weightInput, setWeightInput] = useState('160');
+  const [weightInput, setWeightInput] = useState(getInitialWeight);
   const [durationInput, setDurationInput] = useState('30');
   const [showSuggestions, setShowSuggestions] = useState(false);
+  const [showWeightInfo, setShowWeightInfo] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   
   // Search parameters state that triggers hook
-  const [searchParams, setSearchParams] = useState<CaloriesBurnedSearchParams>({
+  const [searchParams, setSearchParams] = useState<CaloriesBurnedSearchParams>(() => ({
     activity: '',
-    weight: 160,
+    weight: Math.round(Number(getInitialWeight()) * 2.20462),
     duration: 30,
-  });
+  }));
 
   // Validation errors
   const [errors, setErrors] = useState<{ activity?: string; weight?: string; duration?: string }>({});
+
+  useEffect(() => {
+    const handleWeightChange = () => {
+      const currentVal = getInitialWeight();
+      setWeightInput(currentVal);
+      setSearchParams(prev => {
+        if (prev.activity) {
+          return {
+            ...prev,
+            weight: Math.round(Number(currentVal) * 2.20462),
+          };
+        }
+        return prev;
+      });
+    };
+
+    window.addEventListener('vitalmetrics_weight_changed', handleWeightChange);
+    window.addEventListener('storage', handleWeightChange);
+    return () => {
+      window.removeEventListener('vitalmetrics_weight_changed', handleWeightChange);
+      window.removeEventListener('storage', handleWeightChange);
+    };
+  }, []);
 
   // Query hook
   const { data: activityResults, isLoading, isError, error } = useCalories(searchParams);
@@ -156,15 +204,15 @@ export const CaloriesCalculator = React.memo(function CaloriesCalculator({ onAdd
     setShowSuggestions(false);
     const newErrors: typeof errors = {};
 
-    const weightNum = Number(weightInput);
+    const weightKg = Number(weightInput);
     const durationNum = Number(durationInput);
 
     if (!activityInput.trim()) {
       newErrors.activity = 'Debes ingresar un término de actividad.';
     }
 
-    if (!weightInput || isNaN(weightNum) || weightNum <= 0 || weightNum > 1000) {
-      newErrors.weight = 'Ingresa un peso válido entre 1 y 1000 lbs.';
+    if (!weightInput || isNaN(weightKg) || weightKg <= 0 || weightKg > 500) {
+      newErrors.weight = 'Ingresa un peso válido entre 1 y 500 kg.';
     }
 
     if (!durationInput || isNaN(durationNum) || durationNum <= 0 || durationNum > 1440) {
@@ -178,9 +226,10 @@ export const CaloriesCalculator = React.memo(function CaloriesCalculator({ onAdd
 
     setErrors({});
     const queryTerm = translateActivityToEnglish(activityInput.trim());
+    const weightLbs = Math.round(weightKg * 2.20462);
     setSearchParams({
       activity: queryTerm,
-      weight: weightNum,
+      weight: weightLbs,
       duration: durationNum,
     });
   };
@@ -243,14 +292,14 @@ export const CaloriesCalculator = React.memo(function CaloriesCalculator({ onAdd
               onBlur={() => setTimeout(() => { setShowSuggestions(false); setHighlightedIndex(-1); }, 200)}
               onKeyDown={handleKeyDown}
               placeholder="Ej. Correr, Caminar, Ciclismo..."
-              className={`w-full rounded-none border-outline-variant focus:border-secondary focus:ring-secondary/20 p-sm text-body-md bg-transparent border ${errors.activity ? 'border-red-500' : ''}`}
+              className={`w-full rounded-md border-outline-variant focus:border-secondary focus:ring-secondary/20 p-sm text-body-md bg-transparent border ${errors.activity ? 'border-red-500' : ''}`}
               autoComplete="off"
               role="combobox"
               aria-expanded={showSuggestions && filteredSuggestions.length > 0}
               aria-activedescendant={highlightedIndex >= 0 ? `exercise-suggestion-${highlightedIndex}` : undefined}
             />
             {showSuggestions && filteredSuggestions.length > 0 && (
-              <ul className="absolute z-10 w-full mt-1 bg-surface-container-lowest rounded-none shadow-xl border border-outline-variant/50 max-h-48 overflow-y-auto m-0 p-0 list-none custom-scrollbar" role="listbox">
+              <ul className="absolute z-10 w-full mt-1 bg-surface-container-lowest rounded-md shadow-xl border border-outline-variant/50 max-h-48 overflow-y-auto m-0 p-0 list-none custom-scrollbar" role="listbox">
                 {filteredSuggestions.map((ex, idx) => (
                   <li
                     key={idx}
@@ -284,16 +333,26 @@ export const CaloriesCalculator = React.memo(function CaloriesCalculator({ onAdd
           <div className="grid grid-cols-2 gap-md">
             <div>
               <label className="font-sans text-sm font-medium text-on-surface-variant block mb-xs" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>
-                Peso (lbs)
+                Peso (kg)
               </label>
               <input
                 type="number"
                 value={weightInput}
-                onChange={(e) => setWeightInput(e.target.value)}
-                placeholder="160"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setWeightInput(val);
+                  const num = Number(val);
+                  if (val && !isNaN(num) && num > 0 && num <= 500) {
+                    localStorage.setItem('vitalmetrics_weight_kg', val);
+                    const lbs = num * 2.20462;
+                    localStorage.setItem('vitalmetrics_weight_lbs', Math.round(lbs).toString());
+                    window.dispatchEvent(new Event('vitalmetrics_weight_changed'));
+                  }
+                }}
+                placeholder="70"
                 min="1"
-                max="1000"
-                className={`w-full rounded-none border-outline-variant focus:border-secondary focus:ring-secondary/20 p-sm text-body-md bg-transparent border ${errors.weight ? 'border-red-500' : ''}`}
+                max="500"
+                className={`w-full rounded-md border-outline-variant focus:border-secondary focus:ring-secondary/20 p-sm text-body-md bg-transparent border ${errors.weight ? 'border-red-500' : ''}`}
               />
               {errors.weight && (
                 <span className="text-red-500 text-xs mt-1 block">
@@ -313,7 +372,7 @@ export const CaloriesCalculator = React.memo(function CaloriesCalculator({ onAdd
                 placeholder="30"
                 min="1"
                 max="1440"
-                className={`w-full rounded-none border-outline-variant focus:border-secondary focus:ring-secondary/20 p-sm text-body-md bg-transparent border ${errors.duration ? 'border-red-500' : ''}`}
+                className={`w-full rounded-md border-outline-variant focus:border-secondary focus:ring-secondary/20 p-sm text-body-md bg-transparent border ${errors.duration ? 'border-red-500' : ''}`}
               />
               {errors.duration && (
                 <span className="text-red-500 text-xs mt-1 block">
@@ -326,7 +385,7 @@ export const CaloriesCalculator = React.memo(function CaloriesCalculator({ onAdd
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-secondary-container text-white py-md rounded-none font-sans text-base font-semibold hover:opacity-90 transition-all active:scale-95 shadow-md border-none cursor-pointer mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-secondary-container text-white py-md rounded-md font-sans text-base font-semibold hover:opacity-90 transition-all active:scale-95 shadow-md border-none cursor-pointer mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ fontFamily: 'Inter, system-ui, sans-serif' }}
           >
             {isLoading ? 'Calculando...' : 'Calcular Calorías'}
@@ -410,6 +469,24 @@ export const CaloriesCalculator = React.memo(function CaloriesCalculator({ onAdd
             )}
           </div>
         )}
+
+        {/* Educational collapsible: why weight matters */}
+        <div className="mt-md border-t border-outline-variant/30 pt-sm">
+          <button
+            type="button"
+            onClick={() => setShowWeightInfo(prev => !prev)}
+            className="flex items-center gap-xs w-full bg-transparent border-none cursor-pointer p-0 text-left group"
+          >
+            <span className="material-symbols-outlined text-[16px] text-primary">science</span>
+            <span className="text-xs font-semibold text-primary group-hover:underline">¿Por qué influye tu peso?</span>
+            <span className={`material-symbols-outlined text-[16px] text-outline transition-transform duration-300 ml-auto ${showWeightInfo ? 'rotate-180' : ''}`}>expand_more</span>
+          </button>
+          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${showWeightInfo ? 'max-h-40 opacity-100 mt-sm' : 'max-h-0 opacity-0'}`}>
+            <p className="text-xs text-outline leading-relaxed m-0 bg-surface-container-low p-sm rounded-md border border-outline-variant/20">
+              La física determina que a mayor peso corporal, tu cuerpo requiere realizar un mayor esfuerzo y gastar más energía (calorías) para completar la misma actividad física (como el ciclismo o correr). Por ello, personalizar tu peso nos permite darte un cálculo exacto adaptado a ti.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
