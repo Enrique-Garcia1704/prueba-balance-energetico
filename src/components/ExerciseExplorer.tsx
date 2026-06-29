@@ -13,6 +13,7 @@ import latsImg from '../assets/lats.png';
 import quadricepsImg from '../assets/quadriceps.png';
 import shouldersImg from '../assets/shoulders.jpg';
 import tricepsImg from '../assets/triceps.png';
+import musculoImg from '../assets/musculo.png';
 
 export function ExerciseExplorer() {
   const [searchInput, setSearchInput] = useState('');
@@ -340,7 +341,7 @@ export function ExerciseExplorer() {
       {isIdle && (
         <div className="border-2 border-dashed border-outline-variant rounded-none p-xl flex flex-col items-center justify-center text-center bg-surface-container-low/50 hover:bg-surface-container-low transition-colors cursor-pointer group">
           <div className="w-16 h-16 bg-surface-container rounded-none flex items-center justify-center mb-md group-hover:scale-110 transition-transform">
-            <span className="material-symbols-outlined text-primary text-[32px]">fitness_center</span>
+            <img src={musculoImg} alt="Músculo" className="w-10 h-10 object-contain" />
           </div>
           <h3 className="font-headline-md text-headline-md text-on-surface">Esperando búsqueda</h3>
           <p className="font-body-md text-body-md text-outline mt-xs max-w-sm">
